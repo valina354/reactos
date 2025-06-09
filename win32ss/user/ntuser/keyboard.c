@@ -20,7 +20,7 @@ DWORD gdwLanguageToggleKey = 1;
 INT gLayoutToggleKeyState = 0;
 DWORD gdwLayoutToggleKey = 2;
 
-// State for Alt+Numpad character entry
+/* State for Alt+Numpad character entry */
 static enum {
     ALTNUM_INACTIVE,
     ALTNUM_ACTIVE,
@@ -912,6 +912,7 @@ ProcessKeyEvent(WORD wVk, WORD wScanCode, DWORD dwFlags, BOOL bInjected, DWORD d
 	
 	/*
      * Handle Alt+Numpad character composition.
+     * TODO: Inserting unicode characters
      */
     if (bIsDown &&
         IS_KEY_DOWN(gafAsyncKeyState, VK_MENU) &&
