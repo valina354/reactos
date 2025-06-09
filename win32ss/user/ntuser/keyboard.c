@@ -938,7 +938,8 @@ ProcessKeyEvent(WORD wVk, WORD wScanCode, DWORD dwFlags, BOOL bInjected, DWORD d
 
             return TRUE;
         }
-        else if (wVk != VK_MENU)
+
+        if (wVk != VK_MENU)
         {
             gAltNumPadState = ALTNUM_INACTIVE;
             gAltNumPadValue = 0;
