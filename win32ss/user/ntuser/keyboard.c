@@ -928,7 +928,7 @@ ProcessKeyEvent(WORD wVk, WORD wScanCode, DWORD dwFlags, BOOL bInjected, DWORD d
                 gAltNumPadState = (uDigit == 0) ? ALTNUM_OEM_PREFIX : ALTNUM_ACTIVE;
             }
 
-            if (gAltNumPadState != ALTNUM_OEM_PREFIX || gAltNumPadValue > 0)
+            if (gAltNumPadState != ALTNUM_OEM_PREFIX || gAltNumPadValue != 0)
             {
                 /* Protect against overflow */
                 if (gAltNumPadValue < (MAXULONG / 10))
@@ -955,11 +955,11 @@ ProcessKeyEvent(WORD wVk, WORD wScanCode, DWORD dwFlags, BOOL bInjected, DWORD d
     {
         PUSER_MESSAGE_QUEUE pQueue = IntGetFocusMessageQueue();
 
-        if (gAltNumPadValue > 0 && pQueue && pQueue->ptiKeyboard)
+        if (gAltNumPadValue != 0 && pQueue && pQueue->ptiKeyboard)
         {
             if (gAltNumPadValue <= 255)
             {
-                NTSTATUS ntStatus;
+                NTSTATUS Status;
                 WCHAR wchUnicodeChar;
                 CHAR cAnsiChar = (CHAR)gAltNumPadValue;
                 MSG msgChar;
@@ -968,19 +968,19 @@ ProcessKeyEvent(WORD wVk, WORD wScanCode, DWORD dwFlags, BOOL bInjected, DWORD d
                 {
                     /* The sequence started with '0', use the OEM->Unicode function */
                     ntStatus = RtlOemToUnicodeN(&wchUnicodeChar,
-                                                sizeof(WCHAR),
+                                                sizeof(wchUnicodeChar),
                                                 NULL,
                                                 &cAnsiChar,
-                                                sizeof(CHAR));
+                                                sizeof(cAnsiChar));
                 }
                 else
                 {
                     /* Otherwise, use the standard MultiByte->Unicode function (uses ACP) */
                     ntStatus = RtlMultiByteToUnicodeN(&wchUnicodeChar,
-                                                      sizeof(WCHAR),
+                                                      sizeof(wchUnicodeChar),
                                                       NULL,
                                                       &cAnsiChar,
-                                                      sizeof(CHAR));
+                                                      sizeof(cAnsiChar));
                 }
 
                 if (NT_SUCCESS(ntStatus))
