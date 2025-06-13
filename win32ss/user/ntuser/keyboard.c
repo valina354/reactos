@@ -967,7 +967,7 @@ ProcessKeyEvent(WORD wVk, WORD wScanCode, DWORD dwFlags, BOOL bInjected, DWORD d
                 if (gAltNumPadState == ALTNUM_OEM_PREFIX)
                 {
                     /* The sequence started with '0', use the OEM->Unicode function */
-                    ntStatus = RtlOemToUnicodeN(&wchUnicodeChar,
+                    Status = RtlOemToUnicodeN(&wchUnicodeChar,
                                                 sizeof(wchUnicodeChar),
                                                 NULL,
                                                 &cAnsiChar,
@@ -976,14 +976,14 @@ ProcessKeyEvent(WORD wVk, WORD wScanCode, DWORD dwFlags, BOOL bInjected, DWORD d
                 else
                 {
                     /* Otherwise, use the standard MultiByte->Unicode function (uses ACP) */
-                    ntStatus = RtlMultiByteToUnicodeN(&wchUnicodeChar,
+                    Status = RtlMultiByteToUnicodeN(&wchUnicodeChar,
                                                       sizeof(wchUnicodeChar),
                                                       NULL,
                                                       &cAnsiChar,
                                                       sizeof(cAnsiChar));
                 }
 
-                if (NT_SUCCESS(ntStatus))
+                if (NT_SUCCESS(Status))
                 {
                     msgChar.hwnd = pQueue->spwndFocus ? UserHMGetHandle(pQueue->spwndFocus) : NULL;
                     msgChar.message = WM_CHAR;
