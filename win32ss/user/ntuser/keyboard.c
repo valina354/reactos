@@ -939,7 +939,7 @@ ProcessKeyEvent(WORD wVk, WORD wScanCode, DWORD dwFlags, BOOL bInjected, DWORD d
 
             return TRUE;
         }
-
+        /* Check if the incoming key is not the menu key itself/alone */
         else if (wVk != VK_MENU)
         {
             gAltNumPadState = ALTNUM_INACTIVE;
