@@ -968,19 +968,19 @@ ProcessKeyEvent(WORD wVk, WORD wScanCode, DWORD dwFlags, BOOL bInjected, DWORD d
                 {
                     /* The sequence started with '0', use the OEM->Unicode function */
                     Status = RtlOemToUnicodeN(&wchUnicodeChar,
-                                                sizeof(wchUnicodeChar),
-                                                NULL,
-                                                &cAnsiChar,
-                                                sizeof(cAnsiChar));
+                                              sizeof(wchUnicodeChar),
+                                              NULL,
+                                              &cAnsiChar,
+                                              sizeof(cAnsiChar));
                 }
                 else
                 {
                     /* Otherwise, use the standard MultiByte->Unicode function (uses ACP) */
                     Status = RtlMultiByteToUnicodeN(&wchUnicodeChar,
-                                                      sizeof(wchUnicodeChar),
-                                                      NULL,
-                                                      &cAnsiChar,
-                                                      sizeof(cAnsiChar));
+                                                    sizeof(wchUnicodeChar),
+                                                    NULL,
+                                                    &cAnsiChar,
+                                                    sizeof(cAnsiChar));
                 }
 
                 if (NT_SUCCESS(Status))
