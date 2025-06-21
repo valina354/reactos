@@ -925,7 +925,7 @@ ProcessKeyEvent(WORD wVk, WORD wScanCode, DWORD dwFlags, BOOL bInjected, DWORD d
 
             if (gAltNumPadState == ALTNUM_INACTIVE)
             {
-                gAltNumPadState = (uDigit == 0) ? ALTNUM_OEM_PREFIX : ALTNUM_ACTIVE;
+                gAltNumPadState = (uDigit == 0) ? ALTNUM_ACTIVE : ALTNUM_OEM_PREFIX;
             }
 
             if (gAltNumPadState != ALTNUM_OEM_PREFIX || gAltNumPadValue != 0)
@@ -957,11 +957,11 @@ ProcessKeyEvent(WORD wVk, WORD wScanCode, DWORD dwFlags, BOOL bInjected, DWORD d
 
         if (gAltNumPadValue != 0 && pQueue && pQueue->ptiKeyboard)
         {
-            if (gAltNumPadValue <= 255)
+            if (gAltNumPadValue != 0)
             {
                 NTSTATUS Status;
                 WCHAR wchUnicodeChar;
-                CHAR cAnsiChar = (CHAR)gAltNumPadValue;
+                CHAR cAnsiChar = (CHAR)(gAltNumPadValue % 256);
                 MSG msgChar;
 
                 if (gAltNumPadState == ALTNUM_OEM_PREFIX)
