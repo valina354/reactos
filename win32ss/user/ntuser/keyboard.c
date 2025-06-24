@@ -957,43 +957,40 @@ ProcessKeyEvent(WORD wVk, WORD wScanCode, DWORD dwFlags, BOOL bInjected, DWORD d
 
         if (gAltNumPadValue != 0 && pQueue && pQueue->ptiKeyboard)
         {
-            if (gAltNumPadValue != 0)
+            NTSTATUS Status;
+            WCHAR wchUnicodeChar;
+            CHAR cAnsiChar = (CHAR)(gAltNumPadValue % 256);
+            MSG msgChar;
+
+            if (gAltNumPadState == ALTNUM_OEM_PREFIX)
             {
-                NTSTATUS Status;
-                WCHAR wchUnicodeChar;
-                CHAR cAnsiChar = (CHAR)(gAltNumPadValue % 256);
-                MSG msgChar;
+                /* The sequence started with '0', use the OEM->Unicode function */
+                Status = RtlOemToUnicodeN(&wchUnicodeChar,
+                                            sizeof(wchUnicodeChar),
+                                            NULL,
+                                            &cAnsiChar,
+                                            sizeof(cAnsiChar));
+            }
+            else
+            {
+                 /* Otherwise, use the standard MultiByte->Unicode function (uses ACP) */
+                Status = RtlMultiByteToUnicodeN(&wchUnicodeChar,
+                                                sizeof(wchUnicodeChar),
+                                                NULL,
+                                                &cAnsiChar,
+                                                sizeof(cAnsiChar));
+            }
 
-                if (gAltNumPadState == ALTNUM_OEM_PREFIX)
-                {
-                    /* The sequence started with '0', use the OEM->Unicode function */
-                    Status = RtlOemToUnicodeN(&wchUnicodeChar,
-                                              sizeof(wchUnicodeChar),
-                                              NULL,
-                                              &cAnsiChar,
-                                              sizeof(cAnsiChar));
-                }
-                else
-                {
-                    /* Otherwise, use the standard MultiByte->Unicode function (uses ACP) */
-                    Status = RtlMultiByteToUnicodeN(&wchUnicodeChar,
-                                                    sizeof(wchUnicodeChar),
-                                                    NULL,
-                                                    &cAnsiChar,
-                                                    sizeof(cAnsiChar));
-                }
+            if (NT_SUCCESS(Status))
+             {
+                msgChar.hwnd = pQueue->spwndFocus ? UserHMGetHandle(pQueue->spwndFocus) : NULL;
+                msgChar.message = WM_CHAR;
+                msgChar.wParam = wchUnicodeChar;
+                msgChar.lParam = 1;
+                msgChar.time = dwTime;
+                msgChar.pt = gpsi->ptCursor;
 
-                if (NT_SUCCESS(Status))
-                {
-                    msgChar.hwnd = pQueue->spwndFocus ? UserHMGetHandle(pQueue->spwndFocus) : NULL;
-                    msgChar.message = WM_CHAR;
-                    msgChar.wParam = wchUnicodeChar;
-                    msgChar.lParam = 1;
-                    msgChar.time = dwTime;
-                    msgChar.pt = gpsi->ptCursor;
-
-                    MsqPostMessage(pQueue->ptiKeyboard, &msgChar, FALSE, QS_KEY, 0, 0);
-                }
+                MsqPostMessage(pQueue->ptiKeyboard, &msgChar, FALSE, QS_KEY, 0, 0);
             }
         }
 
